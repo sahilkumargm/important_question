@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Important Question 👀</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      overflow: hidden;
+      text-align: center;
+    }
+
+    h1 { font-size: 2.5rem; color: #333; }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    button:hover { transform: scale(1.1); }
+
+    #yes { background: #4CAF50; color: white; }
+
+    #no {
+      background: #f44336;
+      color: white;
+      position: absolute;
+    }
+
+    #message { margin-top: 10px; color: #444; }
+
+    /* CARD */
+    .card-container {
+      perspective: 1000px;
+      margin-top: 20px;
+    }
+
+    .card {
+      width: 220px;
+      height: 320px;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: flip 1s forwards;
+      margin: auto;
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 12px;
+    }
+
+    .front img {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+    }
+
+    .back {
+      background: #111;
+      transform: rotateY(180deg);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+    }
+
+    @keyframes flip {
+      from { transform: rotateY(0deg); }
+      to { transform: rotateY(180deg); }
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div id="content">
+  <h1>Chai & Uno picnic? ☕🎴</h1>
+
+  <button id="yes" onclick="yesClick()">Yes 😄</button>
+  <button id="no">No 🙃</button>
+
+  <div id="message"></div>
+</div>
+
+<script>
+/* ===== EMAILJS ===== */
+(function(){
+  emailjs.init("YOUR_PUBLIC_KEY");
+})();
+
+function sendResponse(answer){
+  emailjs.send("YOUR_SERVICE_ID","YOUR_TEMPLATE_ID",{
+    message: answer
+  });
+}
+
+/* ===== HOVER NO LOGIC ===== */
+const noBtn = document.getElementById("no");
+const msg = document.getElementById("message");
+
+const messages = [
+  "Heyy don't run away 😭",
+  "At least hear me out 😤",
+  "This button is shy 🫣",
+  "You're making this harder than it needs to be 😆",
+  "Okay fine... you *can* click no now 😌"
+];
+
+let moves = 0;
+
+noBtn.addEventListener("mouseover", () => {
+  if (moves < 5) {
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 50);
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+    msg.innerText = messages[moves];
+    moves++;
+  }
+});
+
+/* ===== UNO + THINKING DELAY ===== */
+noBtn.addEventListener("click", () => {
+
+  document.getElementById("content").innerHTML = `
+    <div style="font-size:2rem;">UNO REVERSE 😏</div>
+
+    <div class="card-container">
+      <div class="card">
+        <div class="card-face front">
+          <img src="https://static.wikia.nocookie.net/mafiabot/images/2/22/Uno_Reverse_Card.png/revision/latest?cb=20200731063244">
+        </div>
+        <div class="card-face back">
+          thinking...
+        </div>
+      </div>
+    </div>
+
+    <h2 id="thinkingText">Thinking</h2>
+  `;
+
+  let dots = 0;
+  const thinkingText = document.getElementById("thinkingText");
+
+  const interval = setInterval(() => {
+    dots = (dots + 1) % 4;
+    thinkingText.innerText = "Thinking" + ".".repeat(dots);
+  }, 400);
+
+  setTimeout(() => {
+    clearInterval(interval);
+    yesClick();
+  }, 2500);
+});
+
+/* ===== YES ===== */
+function yesClick() {
+  sendResponse("Yes 😄");
+
+  document.body.innerHTML = `
+    <h1 style="font-size:3rem;">I knew you would say yes! 😌✨</h1>
+    <p>Chai & Uno it is ☕🎴</p>
+  `;
+
+  confetti();
+}
+
+/* ===== CONFETTI ===== */
+function confetti() {
+  for (let i = 0; i < 100; i++) {
+    let div = document.createElement("div");
+    div.style.position = "fixed";
+    div.style.width = "10px";
+    div.style.height = "10px";
+    div.style.background = "hsl(" + Math.random()*360 + ",100%,50%)";
+    div.style.top = "-10px";
+    div.style.left = Math.random()*window.innerWidth + "px";
+    document.body.appendChild(div);
+
+    let fall = div.animate([
+      { transform: "translateY(0px)" },
+      { transform: "translateY(100vh)" }
+    ], {
+      duration: 2000 + Math.random()*2000,
+      easing: "linear"
+    });
+
+    fall.onfinish = () => div.remove();
+  }
+}
+</script>
+
+</body>
+</html>
